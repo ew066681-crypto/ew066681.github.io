@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>野火长跑社 - 百公里接力完赛证书</title>
+    <style>
+        /* --- 电脑端基础样式保持不变 --- */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #e9ecef;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #search-page {
+            background: white; padding: 40px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center;
+            width: 100%; max-width: 400px; border-top: 6px solid #1b3281; box-sizing: border-box;
+        }
+
+        .search-logo { width: 80px; height: 80px; margin-bottom: 15px; }
+        #search-page h2 { color: #1b3281; margin-top: 0; margin-bottom: 30px; letter-spacing: 2px; }
+
+        input {
+            width: 80%; padding: 12px 20px; font-size: 16px; border: 2px solid #ddd; 
+            border-radius: 4px; outline: none; transition: all 0.3s; margin-bottom: 20px; 
+            text-align: center; box-sizing: border-box;
+        }
+        input:focus { border-color: #1b3281; }
+
+        .btn-generate {
+            background: #d32f2f; color: white; border: none; padding: 12px 30px; 
+            font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3); transition: transform 0.1s;
+        }
+        .btn-generate:active { transform: scale(0.97); }
+
+        #cert-page { display: none; width: 100%; max-width: 750px; animation: fadeIn 0.4s ease-out; }
+
+        .certificate {
+            background: white; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+            padding: 30px; background-image: url('data:image/svg+xml;utf8,<svg opacity="0.04" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><text y="150" x="20" font-size="36" font-family="Microsoft YaHei" font-weight="bold" transform="rotate(-30 150 150)" fill="%231b3281">野火长跑社</text></svg>');
+        }
+
+        .cert-inner {
+            border: 2px solid #1b3281; outline: 6px solid #1b3281; outline-offset: -12px; 
+            padding: 40px 40px 50px; position: relative; background: transparent;
+        }
+
+        .finish-line-top {
+            position: absolute; top: 0; left: 0; width: 100%; height: 12px;
+            background: repeating-linear-gradient(45deg, #333, #333 10px, #fff 10px, #fff 20px);
+            border-bottom: 4px solid #d32f2f;
+        }
+
+        .ribbon {
+            position: absolute; top: -6px; right: 30px; width: 40px; height: 60px;
+            background: #d32f2f; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+        .ribbon::after {
+            content: ''; position: absolute; bottom: -15px; left: 0;
+            border-left: 20px solid #d32f2f; border-right: 20px solid #d32f2f; border-bottom: 15px solid transparent;
+        }
+
+        .cert-header { text-align: center; margin-bottom: 25px; margin-top: 20px; }
+        .cert-logo { height: 90px; margin-bottom: 15px; }
+        .cert-title { font-size: 42px; font-weight: 900; color: #1b3281; letter-spacing: 12px; margin: 0 0 5px 12px; }
+        .cert-subtitle { color: #d32f2f; font-size: 14px; font-weight: bold; letter-spacing: 4px; }
+
+        .cert-content { padding: 10px 10px 0; }
+        .cert-body { font-size: 18px; color: #333; line-height: 2.2; text-align: justify; }
+        .cert-blessing-text { font-size: 18px; color: #333; line-height: 2.2; text-align: center; margin: 25px 0; padding: 0 20px; }
+
+        .highlight-name { font-size: 26px; font-weight: bold; color: #1b3281; border-bottom: 2px solid #1b3281; padding: 0 10px; margin: 0 5px; }
+        .highlight-team { font-weight: bold; color: #d32f2f; }
+        .senior-badge { color: #d32f2f; font-weight: bold; font-size: 20px; margin-left: 5px; }
+
+        .stats-box {
+            display: flex; justify-content: space-around; gap: 15px; margin: 20px 0; 
+            padding: 20px 10px; background: #f8f9fa; border: 1px solid #e9ecef; border-top: 3px solid #6cb33e;
+        }
+        .stat-item { text-align: center; flex: 1; }
+        .stat-value { font-size: 30px; font-weight: 900; color: #1b3281; font-family: 'Impact', sans-serif; }
+        .team-value { color: #d32f2f; }
+        .stat-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; font-weight: bold; }
+
+        .cert-footer-section { margin-top: 40px; display: flex; justify-content: flex-end; }
+        .footer-signature { position: relative; padding: 10px 30px; }
+        .footer-text { text-align: right; font-size: 18px; font-weight: bold; color: #1b3281; line-height: 1.8; position: relative; z-index: 1; }
+        .stamp-img { position: absolute; right: 45px; bottom: -5px; width: 120px; height: 120px; transform: rotate(-12deg); opacity: 0.85; z-index: 2; mix-blend-mode: multiply; pointer-events: none; }
+
+        .btn-back { display: block; margin: 25px auto 0; background: white; color: #666; border: 1px solid #ccc; padding: 8px 25px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================
+           手机端极限压缩版：保证一屏显示完整，且解决顶部被切断的问题
+           ========================================================== */
+        @media (max-width: 600px) {
+            body { 
+                padding: 5px; 
+                align-items: flex-start; /* 解决因为太高导致顶部超出屏幕的问题 */
+            }
+            #search-page { padding: 30px 15px; margin-top: 10vh; }
+            #cert-page { margin-top: 2vh; } /* 稍微往下推一点 */
+            
+            .certificate { padding: 5px; box-sizing: border-box; }
+            .cert-inner { padding: 25px 15px 20px; outline-offset: -6px; }
+            .finish-line-top { height: 8px; }
+            .ribbon { right: 10px; transform: scale(0.6); top: -10px; }
+            
+            /* 极限压缩头部高度 */
+            .cert-header { margin-bottom: 10px; margin-top: 10px; }
+            .cert-logo { height: 45px; margin-bottom: 5px; }
+            .cert-title { font-size: 26px; letter-spacing: 4px; margin-left: 2px; }
+            .cert-subtitle { font-size: 10px; letter-spacing: 2px; }
+            
+            /* 极限压缩正文字号和行距 */
+            .cert-content { padding: 0; }
+            .cert-body { font-size: 13px; line-height: 1.6; }
+            .cert-blessing-text { font-size: 13px; padding: 0; margin: 10px 0; line-height: 1.6; }
+            
+            .highlight-name { font-size: 18px; padding: 0 2px; border-bottom: 1px solid #1b3281; }
+            .senior-badge { font-size: 14px; }
+
+            /* 极限压缩数据框 */
+            .stats-box { gap: 2px; padding: 10px 2px; margin: 10px 0; border-top: 2px solid #6cb33e; }
+            .stat-value { font-size: 18px; }
+            .stat-label { font-size: 9px; margin-top: 2px; letter-spacing: 0; }
+
+            /* 极限压缩底部落款 */
+            .cert-footer-section { margin-top: 15px; }
+            .footer-signature { padding: 0 10px; }
+            .footer-text { font-size: 12px; line-height: 1.4; }
+            .stamp-img { width: 75px; height: 75px; right: 20px; bottom: -10px; }
+
+            /* 缩小返回按钮，防止占用过多屏幕空间 */
+            .btn-back { margin: 15px auto 10px; padding: 6px 20px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="search-page">
+        <img src="logo.jpg" alt="野火长跑社Logo" class="search-logo" onerror="this.style.display='none'">
+        <h2>第三届百公里接力</h2>
+        <input type="text" id="inputName" placeholder="输入您的姓名">
+        <br>
+        <button class="btn-generate" onclick="generate()">获取完赛证书</button>
+    </div>
+
+    <div id="cert-page">
+        <div class="certificate" id="cert-node">
+            <div class="cert-inner">
+                <div class="finish-line-top"></div>
+                <div class="ribbon"></div>
+
+                <div class="cert-header">
+                    <img src="logo.jpg" alt="野火长跑社" class="cert-logo" onerror="this.style.display='none'">
+                    <h1 class="cert-title">完赛证书</h1>
+                    <div class="cert-subtitle">FINISHER CERTIFICATE</div>
+                </div>
+                
+                <div class="cert-content">
+                    <div class="cert-body" id="textTop"></div>
+
+                    <div class="stats-box">
+                        <div class="stat-item">
+                            <div class="stat-value" id="showDist"></div>
+                            <div class="stat-label">个人里程 (km)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="showTime"></div>
+                            <div class="stat-label">个人用时 (h:m:s)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value team-value" id="showTeamTime"></div>
+                            <div class="stat-label">团队百公里用时</div>
+                        </div>
+                    </div>
+
+                    <div class="cert-blessing-text" id="textBottom"></div>
+
+                    <div class="cert-footer-section">
+                        <div class="footer-signature">
+                            <div class="footer-text">
+                                野火长跑社<br>
+                                2026年4月25日
+                            </div>
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><circle cx='60' cy='60' r='55' fill='none' stroke='%23d32f2f' stroke-width='4'/><text y='50' x='60' text-anchor='middle' font-size='16' font-family='Microsoft YaHei' font-weight='900' fill='%23d32f2f' letter-spacing='2'>野火长跑社</text><text y='80' x='60' text-anchor='middle' font-size='18' font-family='Microsoft YaHei' font-weight='900' fill='%23d32f2f' letter-spacing='2'>成绩认证</text><line x1='15' y1='62' x2='105' y2='62' stroke='%23d32f2f' stroke-width='1'/></svg>" 
+                                 alt="野火长跑社印章" class="stamp-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn-back" onclick="goBack()">返回上一步</button>
+    </div>
+
+    <script>
+        const runnerDatabase = {
+            "王二": { team: "破风一队", distance: "21.09", time: "01:20:00", teamTime: "07:45:30", isSenior: false },
+            "张三": { team: "日落二队", distance: "10.00", time: "00:55:30", teamTime: "08:12:15", isSenior: false },
+            "赵凯瑞": { team: "毕业破风队", distance: "15.00", time: "00:49:00", teamTime: "07:50:00", isSenior: true }
+        };
+
+        function generate() {
+            const name = document.getElementById('inputName').value.trim();
+            if(!name) { alert("请输入姓名！"); return; }
+
+            const data = runnerDatabase[name];
+
+            if(data) {
+                document.getElementById('showDist').innerText = data.distance;
+                document.getElementById('showTime').innerText = data.time;
+                document.getElementById('showTeamTime').innerText = data.teamTime;
+                
+                const topContainer = document.getElementById('textTop');
+                const bottomContainer = document.getElementById('textBottom');
+                
+                if (data.isSenior) {
+                    topContainer.innerHTML = `亲爱的 <span class="highlight-name">${name}</span><span class="senior-badge">学长</span>：<br>&nbsp;&nbsp;&nbsp;&nbsp;祝贺您作为 <span class="highlight-team">${data.team}</span> 的一员，顺利完成野火长跑社第三届百公里接力！此行不只是公里的累积，更是野火长跑社与您并肩奔跑的珍贵时光。您的奔跑数据如下：`;
+                    bottomContainer.innerHTML = `这一程，每一步都是陪伴；每一棒都是送别。感谢您曾为社团倾注的热爱，我们用汗水与脚步，把青春跑成了一场永不散场的接力。<br>无论未来奔赴何方，愿您步履不停，野火不熄！毕业快乐！`;
+                } else {
+                    topContainer.innerHTML = `亲爱的 <span class="highlight-name">${name}</span> 跑友：<br>&nbsp;&nbsp;&nbsp;&nbsp;祝贺您作为 <span class="highlight-team">${data.team}</span> 的一员，顺利完成野火长跑社第三届百公里接力！长路漫漫，星光不问赶路人。在本次挑战中，您用坚韧的脚步丈量热爱，共同镌刻下百公里的荣耀。您的奔跑数据如下：`;
+                    bottomContainer.innerHTML = `每一次粗重的呼吸，每一滴滚烫的汗水，都是青春最热烈的注脚。完赛即是胜利，愿我们永远保持心底的野火，在未来的赛道上继续并肩驰骋！`;
+                }
+
+                document.getElementById('search-page').style.display = 'none';
+                document.getElementById('cert-page').style.display = 'block';
+            } else {
+                alert("未找到名为【" + name + "】的成绩数据，请检查名字是否输入正确！");
+            }
+        }
+
+        function goBack() {
+            document.getElementById('inputName').value = '';
+            document.getElementById('cert-page').style.display = 'none';
+            document.getElementById('search-page').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
